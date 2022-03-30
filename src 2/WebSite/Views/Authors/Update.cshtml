@@ -1,0 +1,32 @@
+﻿@model Dtos.Common.AuthorDto
+@{
+    ViewData["Title"] = $"Update Author {Model.AuthorId}";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-header text-center">
+            <h1>Actualizar Autor @Model.AuthorId</h1>
+        </div>
+        <div class=card-body>
+            <form asp-action="Update">
+                <input type="hidden" asp-for="AuthorId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <h3 class="text-danger"><strong>@TempData["ErrorMessage"]</strong></h3>
+                <div class="row">
+                    <label class="col-lg-2 col-xs-12 col-form-label" asp-for="Name">Nombre</label>
+                  <div class="col-lg-8 col-xs-12">
+                    <input class="form-control" type="text" asp-for="Name" />
+                  </div>
+                  <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class=mt-3>
+                        <button type="submit" class="btn-primary btn" > <i class="bi bi-arrow-up"></i> Actualizar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<a asp-action="Index">Regresa a la lista</a>

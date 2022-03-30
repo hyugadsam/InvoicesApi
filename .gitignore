@@ -18,3 +18,27 @@ src/InvoicesWebApp/obj/
 src/InvoicesWebAppTest/bin/
 
 src/InvoicesWebAppTest/obj/
+
+src 2/ApplicationServices/bin/
+
+src 2/ApplicationServices/obj/
+
+src 2/DBService/bin/
+
+src 2/DBService/obj/
+
+src 2/Dtos/bin/
+
+src 2/Dtos/obj/
+
+src 2/WebApp/bin/
+
+src 2/WebApp/obj/
+
+src 2/WebApplication/bin/
+
+src 2/WebApplication/obj/
+
+src 2/WebSite/bin/
+
+src 2/WebSite/obj/

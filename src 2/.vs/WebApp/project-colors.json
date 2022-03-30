@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "6384bd6f-a3e4-401d-88fc-0465c7a5b5a5": {
+      "ProjectGuid": "6384bd6f-a3e4-401d-88fc-0465c7a5b5a5",
+      "DisplayName": "WebApp",
+      "ColorIndex": 0
+    },
+    "ff46e946-621c-4f76-8513-addcfa5c4fae": {
+      "ProjectGuid": "ff46e946-621c-4f76-8513-addcfa5c4fae",
+      "DisplayName": "DBService",
+      "ColorIndex": 1
+    },
+    "0b379802-51c3-45c8-8b28-173d8b7572d4": {
+      "ProjectGuid": "0b379802-51c3-45c8-8b28-173d8b7572d4",
+      "DisplayName": "ApplicationServices",
+      "ColorIndex": 2
+    },
+    "aa0ab194-60a8-4569-b931-62252dc3bf7a": {
+      "ProjectGuid": "aa0ab194-60a8-4569-b931-62252dc3bf7a",
+      "DisplayName": "Dtos",
+      "ColorIndex": 3
+    },
+    "f7503f14-19bf-4fb3-ba86-8427354ef30a": {
+      "ProjectGuid": "f7503f14-19bf-4fb3-ba86-8427354ef30a",
+      "DisplayName": "WebApplication",
+      "ColorIndex": 4
+    },
+    "5f347e27-52ae-48b1-aa9a-d921c669ac01": {
+      "ProjectGuid": "5f347e27-52ae-48b1-aa9a-d921c669ac01",
+      "DisplayName": "WebSite",
+      "ColorIndex": 5
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 6
+}

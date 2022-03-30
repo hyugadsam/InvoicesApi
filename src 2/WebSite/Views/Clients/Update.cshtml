@@ -1,0 +1,47 @@
+﻿@using WebSite.Models.Clients
+@model UpdateClientModel
+@{
+    ViewData["Title"] = $"Update Client {Model.ClientId}";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-header text-center">
+            <h1>Actualizar Cliente @Model.ClientId</h1>
+        </div>
+        <div class=card-body>
+            <form asp-action="Update">
+                <input type="hidden" asp-for="ClientId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <h3 class="text-danger"><strong>@TempData["ErrorMessage"]</strong></h3>
+                <div class="row">
+                    <label class="col-lg-2 col-xs-12 col-form-label" asp-for="Name">Nombre</label>
+                  <div class="col-lg-8 col-xs-12">
+                    <input class="form-control" type="text" asp-for="Name" />
+                  </div>
+                  <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <label class="col-lg-2 col-xs-12 col-form-label" asp-for="BookList">Libros</label>
+                    <div  class="col-lg-8 col-xs-12" style="max-height: 20vh; overflow:auto">
+                        
+                       @for (var i = 0; i < Model.BookList.Count; i++)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" checked="@Model.BookList[i].Checked" name="BooksId" id="@Model.BookList[i].Book.BookId" value="@Model.BookList[i].Book.BookId">
+                                <label class="form-check-label" for="@Model.BookList[i].Book.BookId" > @Model.BookList[i].Book.Title </label>
+                            </div>
+                        }
+                    </div>
+                     <span asp-validation-for="BookList" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class=mt-3>
+                        <button type="submit" class="btn-primary btn" > <i class="bi bi-arrow-up"></i> Actualizar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<a asp-action="Index">Regresa a la lista</a>
