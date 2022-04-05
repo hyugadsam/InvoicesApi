@@ -10,7 +10,7 @@
         public const string CreateAuthor = "api/Authors/Create";
 
         /// <summary>
-        /// HttpGet
+        /// HttpGet + ? + Pagination Properties and Values
         /// </summary>
         public const string GetAuthorList = "api/Authors/Get";
 
@@ -43,7 +43,7 @@
         public const string CreateBook = "api/Books/Create";
 
         /// <summary>
-        /// HttpGet
+        /// HttpGet + ? + Pagination Properties and Values
         /// </summary>
         public const string GetBookList = "api/Books/Get";
 
@@ -76,7 +76,7 @@
         public const string CreateClient = "api/Clients/Create";
 
         /// <summary>
-        /// HttpGet
+        /// HttpGet + ? + Pagination Properties and Values
         /// </summary>
         public const string GetClientList = "api/Clients/Get";
 

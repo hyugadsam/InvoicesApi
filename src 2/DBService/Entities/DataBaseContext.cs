@@ -22,7 +22,7 @@ namespace DBService.Entities
         public virtual DbSet<Author> Authors { get; set; }
         public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<AuthorBook> AuthorsBooks { get; set; }
-        //public virtual DbSet<ClientBook> ClientBooks { get; set; }
+        public virtual DbSet<ClientBook> ClientBooks { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -73,10 +73,10 @@ namespace DBService.Entities
                 .IsRequired()
                 .HasMaxLength(250);
 
-                entity.HasMany(c => c.BorrowedBooks)
-                .WithOne(b => b.Client)
-                .HasConstraintName("RelacionClienteLibros")
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                //entity.HasMany(c => c.BorrowedBooks)
+                //.WithOne(b => b.Client)
+                //.HasConstraintName("RelacionClienteLibros")
+                //.OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<AuthorBook>(entity =>
@@ -84,10 +84,10 @@ namespace DBService.Entities
                 entity.HasKey(all => new { all.BookId, all.AuthorId });
             });
 
-            //modelBuilder.Entity<ClientBook>(entity =>
-            //{
-            //    entity.HasKey(all => new { all.ClientId, all.BookId });
-            //});
+            modelBuilder.Entity<ClientBook>(entity =>
+            {
+                entity.HasKey(all => new { all.ClientId, all.BookId });
+            });
 
             base.OnModelCreating(modelBuilder);
         }

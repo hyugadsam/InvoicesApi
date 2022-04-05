@@ -17,11 +17,11 @@ namespace DBService.Entities
 
         public List<AuthorBook> AuthorBooks { get; set; }
 
-        public Client Client { get; set; }
+        //public Client Client { get; set; }
 
-        //public int Quantity { get; set; }
+        public int Quantity { get; set; }
 
-        //public List<ClientBook> ClientBooks { get; set; }
+        public List<ClientBook> ClientBooks { get; set; }
 
     }
 }

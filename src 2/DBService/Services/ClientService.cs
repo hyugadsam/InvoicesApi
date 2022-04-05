@@ -1,5 +1,7 @@
 ﻿using DBService.Entities;
 using DBService.Interfaces;
+using DBService.Utils;
+using Dtos.Common;
 using Dtos.Request;
 using Dtos.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -22,19 +24,19 @@ namespace DBService.Services
             this.logger = logger;
         }
 
-        public async Task<BasicCreateResponse> CreateClient(Client client)
+        public async Task<BasicCreateResponse> Create(Client obj)
         {
             try
             {
-                client.EnrollDate = DateTime.Now;
-                context.Clients.Add(client);
+                obj.EnrollDate = DateTime.Now;
+                context.Clients.Add(obj);
                 await context.SaveChangesAsync();
 
                 return new BasicCreateResponse
                 {
                     Code = 200,
                     Message = "Create Success",
-                    Id = client.ClientId
+                    Id = obj.ClientId
                 };
             }
             catch (Exception ex)
@@ -48,11 +50,12 @@ namespace DBService.Services
             }
         }
 
-        public async Task<List<Client>> GetClientList()
+        public async Task<List<Client>> GetList(PaginationDto pagination)
         {
             try
             {
-                return await context.Clients.Include(b => b.BorrowedBooks).ToListAsync();
+                var query = context.Clients.GetRecordsByPages(pagination).Include(b => b.ClientBooks);  //Primero el paginado de la entidad principal, luego los include
+                return await query.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -61,35 +64,36 @@ namespace DBService.Services
             }
         }
 
-        public async Task<Client> GetClient(int Clientid)
+        public async Task<Client> Get(int Id)
         {
-            return await GetClientInfo(Clientid);
+            return await GetClientInfo(Id, true);
         }
 
-        public async Task<BasicResponse> UpdateClient(UpdateClientRequest request)
+        public async Task<BasicResponse> Update(UpdateClientRequest obj)
         {
             try
             {
-                var DbClient = await GetClientInfo(request.ClientId);
+                var DbClient = await GetClientInfo(obj.ClientId);
                 if (DbClient == null)
                 {
                     return new BasicResponse
                     {
                         Code = 400,
-                        Message = $"El cliente {request.ClientId} no existe en la bd"
+                        Message = $"El cliente {obj.ClientId} no existe en la bd"
                     };
                 }
 
-                if (!DbClient.Name.Equals(request.Name, StringComparison.InvariantCultureIgnoreCase))
+                if (!DbClient.Name.Equals(obj.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (await CheckUniqueEntityText(request.Name))
+                    if (await CheckUniqueEntityText(obj.Name))
                     {
                         return new BasicResponse { Code = 400, Message = "Ya existe un cliente con el mismo nombre" };
                     }
                 }
 
-                DbClient.Name = request.Name;
-                DbClient.BorrowedBooks = await context.Books.Where(b => request.BorrowedBooks != null ? request.BorrowedBooks.Contains(b.BookId) : false).ToListAsync();
+                DbClient.Name = obj.Name;
+                DbClient.ClientBooks = await context.Books.Where(b => obj.BorrowedBooks != null && obj.BorrowedBooks.Contains(b.BookId))
+                    .Select(b => new ClientBook { BookId = b.BookId, ClientId = obj.ClientId }).ToListAsync();
                 context.Entry(DbClient).State = EntityState.Modified;
 
                 await context.SaveChangesAsync();
@@ -111,17 +115,17 @@ namespace DBService.Services
             }
         }
 
-        public async Task<BasicResponse> DeleteClient(int Clientid)
+        public async Task<BasicResponse> Delete(int Id)
         {
             try
             {
-                var DbClient = await GetClientInfo(Clientid);
+                var DbClient = await GetClientInfo(Id);
                 if (DbClient == null)
                 {
                     return new BasicResponse
                     {
                         Code = 400,
-                        Message = $"El cliente {Clientid} no existe en la bd"
+                        Message = $"El cliente {Id} no existe en la bd"
                     };
                 }
 
@@ -145,11 +149,21 @@ namespace DBService.Services
             }
         }
 
-        private async Task<Client> GetClientInfo(int Clientid)
+        private async Task<Client> GetClientInfo(int Clientid, bool addChilds = false)
         {
             try
             {
-                return await context.Clients.Where(c => c.ClientId == Clientid).Include(b => b.BorrowedBooks).FirstOrDefaultAsync();
+                var query = context.Clients.Where(c => c.ClientId == Clientid);
+                if (addChilds)
+                {
+                    query = query.Include(b => b.ClientBooks).ThenInclude(bk => bk.Book);
+                }
+                else
+                {
+                    query = query.Include(b => b.ClientBooks);
+                }
+
+                return await query.FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -163,6 +177,7 @@ namespace DBService.Services
         {
             return await context.Clients.AnyAsync(a => a.Name.ToLower().Equals(text.ToLower()));
         }
+
 
     }
 }

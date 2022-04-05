@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using DBService.Entities;
 using DBService.Interfaces;
-using DBService.Services;
 using Dtos.Common;
 using Dtos.Request;
 using Dtos.Responses;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ApplicationServices.Services
@@ -30,32 +26,31 @@ namespace ApplicationServices.Services
                 return new BasicCreateResponse { Code = 400, Message = "Ya existe un libro con el mismo titulo" };
 
             var book = new Book { Title = Title };
-            return await service.CreateBook(book);
+            return await service.Create(book);
         }
 
-        public async Task<List<BookDto>> GetBookList()
+        public async Task<List<BookDto>> GetBookList(PaginationDto pagination)
         {
-            var books = await service.GetBookList();
+            var books = await service.GetList(pagination);
             return mapper.Map<List<BookDto>>(books);
         }
 
         public async Task<FullBookDto> GetBook(int BookId)
         {
-            var book = await service.GetBook(BookId);
+            var book = await service.Get(BookId);
             return mapper.Map<FullBookDto>(book);
         }
 
         public async Task<BasicResponse> UpdateBook(UpdateBookRequest request)
         {
-            return await service.UpdateBook(request);
+            return await service.Update(request);
         }
 
         public async Task<BasicResponse> DeleteBook(int BookId)
         {
-            return await service.DeleteBook(BookId);
+            return await service.Delete(BookId);
         }
 
+
     }
-
-
 }

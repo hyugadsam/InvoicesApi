@@ -13,6 +13,8 @@ namespace WebSite.Services
 {
     public class WebApiService : IWebApiService
     {
+        #region Ctro && Fields
+
         private readonly HttpClient client;
 
         public WebApiService(HttpClient client)
@@ -20,12 +22,19 @@ namespace WebSite.Services
             this.client = client;
         }
 
+        #endregion
+
         #region Authors
 
-        public async Task<List<AuthorDto>> GetAuthorList()
+        public async Task<List<AuthorDto>> GetAuthorList(Models.Common.PaginationDto pagination)
         {
-            
-            var resp = await client.GetAsync(AuthorsRoutes.GetAuthorList);
+            var pageInfo = new List<string>();
+            foreach (var item in pagination.GetType().GetProperties())
+            {
+                pageInfo.Add($"{item.Name}={item.GetValue(pagination)}");
+            }
+
+            var resp = await client.GetAsync($"{AuthorsRoutes.GetAuthorList}?{string.Join('&', pageInfo)}");
 
             if (resp.StatusCode != HttpStatusCode.OK)
                 return new List<AuthorDto>();
@@ -78,7 +87,7 @@ namespace WebSite.Services
 
         }
 
-        public async Task<BasicResponse> Delete(int Authorid)
+        public async Task<BasicResponse> DeleteAuthor(int Authorid)
         {
             var resp = await client.DeleteAsync(string.Format(AuthorsRoutes.Delete, Authorid));
             if (resp.StatusCode != HttpStatusCode.OK)
@@ -92,9 +101,15 @@ namespace WebSite.Services
 
         #region Books
 
-        public async Task<List<BookDto>> GetBookList()
+        public async Task<List<BookDto>> GetBookList(Models.Common.PaginationDto pagination)
         {
-            var resp = await client.GetAsync(BooksRoutes.GetBookList);
+            var pageInfo = new List<string>();
+            foreach (var item in pagination.GetType().GetProperties())
+            {
+                pageInfo.Add($"{item.Name}={item.GetValue(pagination)}");
+            }
+
+            var resp = await client.GetAsync($"{BooksRoutes.GetBookList}?{string.Join('&', pageInfo)}");
 
             if (resp.StatusCode != HttpStatusCode.OK)
                 return new List<BookDto>();
@@ -157,9 +172,15 @@ namespace WebSite.Services
 
         #region Clients
 
-        public async Task<List<ClientDto>> GetClientList()
+        public async Task<List<ClientDto>> GetClientList(Models.Common.PaginationDto pagination)
         {
-            var resp = await client.GetAsync(ClientsRoutes.GetClientList);
+            var pageInfo = new List<string>();
+            foreach (var item in pagination.GetType().GetProperties())
+            {
+                pageInfo.Add($"{item.Name}={item.GetValue(pagination)}");
+            }
+
+            var resp = await client.GetAsync($"{ClientsRoutes.GetClientList}?{string.Join('&', pageInfo)}");
 
             if (resp.StatusCode != HttpStatusCode.OK)
                 return new List<ClientDto>();
@@ -217,14 +238,6 @@ namespace WebSite.Services
             var response = await resp.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<BasicResponse>(response);
         }
-
-
-
-
-
-
-
-
 
         #endregion
 

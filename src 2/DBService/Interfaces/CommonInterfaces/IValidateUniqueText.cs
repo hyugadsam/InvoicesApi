@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace DBService.Interfaces
+namespace DBService.Interfaces.CommonInterfaces
 {
     public interface IValidateUniqueText
     {

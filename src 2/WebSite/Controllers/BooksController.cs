@@ -1,35 +1,44 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WebSite.Models.Books;
-using WebSite.Services;
-using System.Linq;
-using WebSite.Models.Authors;
-using Dtos.Request;
-using System.Collections.Generic;
+using WebSite.Interfaces;
+using Dtos.Common;
 
 namespace WebSite.Controllers
 {
     public class BooksController : Controller
     {
         private readonly ILogger<BooksController> logger;
-        private readonly IWebApiService apiService;
-        private readonly IMapper mapper;
+        private readonly IBooksAppService service;
+        private readonly IBaseAppService baseService;
 
-        public BooksController(ILogger<BooksController> logger, IWebApiService apiService, IMapper mapper)
+        public BooksController(ILogger<BooksController> logger, IBooksAppService service, IBaseAppService baseService)
         {
             this.logger = logger;
-            this.apiService = apiService;
-            this.mapper = mapper;
+            this.service = service;
+            this.baseService = baseService;
         }
 
-
         [HttpGet]
-        public async Task<IActionResult> Index(string message)
+        public async Task<IActionResult> Index(Models.Common.PaginationDto model, string message)
         {
-            var result = await apiService.GetBookList();
+            if (model == null)  //Si se entra directo a index es null y manda a la pagina 1
+                model = baseService.GetDefaultPagination();
+            else
+            {
+                if (!(model.RecordsPerPage != null && model.RecordsPerPage > 0))
+                {
+                    model.RecordsPerPage = baseService.GetRecordsPerPage();   //Si no viene la pagina, solo usamos el int por defecto
+                }
+            }
+
+            var result = await service.GetList(model);
             ViewBag.Message = message;
+            ViewBag.Page = model.Page;
+            ViewBag.RecordsPerPage = model.RecordsPerPage;
+            ViewBag.ListRecords = baseService.GetRecordsList();
+
             return View(result);
         }
 
@@ -45,7 +54,7 @@ namespace WebSite.Controllers
             if (!ModelState.IsValid)
                 return View();
 
-            var result = await apiService.CreateBook(model.Title);
+            var result = await service.Create(model);
             if (result?.Code == 200)
             {
                 return RedirectToAction(nameof(Index));
@@ -62,20 +71,9 @@ namespace WebSite.Controllers
         public async Task<IActionResult> Update(int BookId)
         {
 
-            var book = await apiService.GetBook(BookId);
-            if (book == null || book?.BookId != BookId)
+            var model = await service.GetUpdateModel(BookId);
+            if (model == null)
                 return NotFound();
-
-            var authors = await apiService.GetAuthorList();
-            var model = mapper.Map<UpdateBookModel>(book);
-            model.AuthorList = mapper.Map<List<SelectAuthorModel>>(authors);
-            model.AuthorList.ForEach( a => a.Check = book.AuthorsList.Any(ba => ba.AuthorId == a.AuthorId));    //Marcar los asignados
-            //model.AuthorList = authors.Select(a => 
-            //    new SelectAuthorModel
-            //    {
-            //        Author = a,
-            //        Check = book.AuthorsList.Any(b => b.AuthorId == a.AuthorId) 
-            //    }).ToList();
 
             return View(model);
         }
@@ -86,9 +84,8 @@ namespace WebSite.Controllers
             if (!ModelState.IsValid)
                 return View();
 
-            var request = mapper.Map<UpdateBookRequest>(model);
+            var result = await service.Update(model);
 
-            var result = await apiService.UpdateBook(request);
             if (result?.Code == 200)
             {
                 return RedirectToAction(nameof(Index));
@@ -103,7 +100,7 @@ namespace WebSite.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int BookId)
         {
-            var book = await apiService.GetBook(BookId);
+            var book = await service.Get(BookId);
             if (book == null || book?.BookId != BookId)
                 return NotFound();
 
@@ -113,22 +110,13 @@ namespace WebSite.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int BookId)
         {
-            var result = await apiService.DeleteBook(BookId);
+            var result = await service.Delete(BookId);
             if (result?.Code == 200)
             {
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Index), new { result.Message });
         }
-
-
-
-
-
-
-
-
-
 
     }
 }

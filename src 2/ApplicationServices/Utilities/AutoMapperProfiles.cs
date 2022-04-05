@@ -45,16 +45,16 @@ namespace ApplicationServices.Utilities
         {
             var lista = new List<BookDto>();
 
-            if (client == null || client.BorrowedBooks == null || client.BorrowedBooks?.Count == 0)
+            if (client == null || client.ClientBooks == null || client.ClientBooks?.Count == 0)
                 return lista;
 
-            foreach (var item in client.BorrowedBooks)
+            foreach (var item in client.ClientBooks)
             {
                 BookDto libro = new BookDto
                 {
                     BookId = item.BookId,
-                    CreateDate = item.CreateDate,
-                    Title = item.Title
+                    CreateDate = item.Book.CreateDate,
+                    Title = item.Book.Title
                 };
                 lista.Add(libro);
             }

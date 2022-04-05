@@ -1,5 +1,7 @@
 ﻿using DBService.Entities;
 using DBService.Interfaces;
+using DBService.Utils;
+using Dtos.Common;
 using Dtos.Request;
 using Dtos.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DBService.Services
@@ -23,19 +24,19 @@ namespace DBService.Services
             this.logger = logger;
         }
 
-        public async Task<BasicCreateResponse> CreateBook(Book book)
+        public async Task<BasicCreateResponse> Create(Book obj)
         {
             try
             {
-                book.CreateDate = DateTime.Now;
-                context.Books.Add(book);
+                obj.CreateDate = DateTime.Now;
+                context.Books.Add(obj);
                 await context.SaveChangesAsync();
 
                 return new BasicCreateResponse
                 {
                     Code = 200,
                     Message = "Create Success",
-                    Id = book.BookId
+                    Id = obj.BookId
                 };
             }
             catch (Exception ex)
@@ -49,11 +50,11 @@ namespace DBService.Services
             }
         }
 
-        public async Task<List<Book>> GetBookList()
+        public async Task<List<Book>> GetList(PaginationDto pagination)
         {
             try
             {
-                return await context.Books.Include(b => b.AuthorBooks).ThenInclude(a => a.Author).ToListAsync();
+                return await context.Books.GetRecordsByPages(pagination).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -62,27 +63,27 @@ namespace DBService.Services
             }
         }
 
-        public async Task<Book> GetBook(int BookId)
+        public async Task<Book> Get(int Id)
         {
-            return await GetBookInfo(BookId, true);
+            return await GetBookInfo(Id, true);
         }
 
-        public async Task<BasicResponse> UpdateBook(UpdateBookRequest request)
+        public async Task<BasicResponse> Update(UpdateBookRequest obj)
         {
             try
             {
-                var dbBook = await GetBookInfo(request.BookId);
+                var dbBook = await GetBookInfo(obj.BookId);
                 if (dbBook == null)
                 {
                     return new BasicResponse
                     {
                         Code = 400,
-                        Message = $"El libro {request.BookId} no existe en la bd"
+                        Message = $"El libro {obj.BookId} no existe en la bd"
                     };
                 }
-                dbBook.Title = request.Title;
-                dbBook.CreateDate = request.CreateDate;
-                dbBook.AuthorBooks = request.AuthorsList.Select( a => new AuthorBook { BookId = request.BookId, AuthorId = a } ).ToList();
+                dbBook.Title = obj.Title;
+                dbBook.CreateDate = obj.CreateDate;
+                dbBook.AuthorBooks = obj.AuthorsList.Select( a => new AuthorBook { BookId = obj.BookId, AuthorId = a } ).ToList();
 
                 context.Entry(dbBook).State = EntityState.Modified;
 
@@ -105,17 +106,17 @@ namespace DBService.Services
             }
         }
 
-        public async Task<BasicResponse> DeleteBook(int BookId)
+        public async Task<BasicResponse> Delete(int Id)
         {
             try
             {
-                var dbBook = await GetBookInfo(BookId);
+                var dbBook = await GetBookInfo(Id);
                 if (dbBook == null)
                 {
                     return new BasicResponse
                     {
                         Code = 400,
-                        Message = $"El libro {BookId} no existe en la bd"
+                        Message = $"El libro {Id} no existe en la bd"
                     };
                 }
                 
@@ -144,7 +145,15 @@ namespace DBService.Services
         {
             try
             {
-                return await context.Books.Where(b => b.BookId == Bookid).Include(book => book.AuthorBooks).ThenInclude(a => a.Author).FirstOrDefaultAsync();
+                var query = context.Books.Where(b => b.BookId == Bookid);
+
+                if (addAutors)
+                    query = query.Include(book => book.AuthorBooks).ThenInclude(a => a.Author);
+                else
+                    query = query.Include(book => book.AuthorBooks);
+
+
+                return await query.FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {

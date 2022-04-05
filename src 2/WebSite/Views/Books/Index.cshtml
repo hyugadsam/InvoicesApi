@@ -10,6 +10,23 @@
     <div class="col-12 text-center">
         <div class="card-header">
             <h1>Lista de Libros</h1>
+            <div class="row justify-content-end">
+                <label for="RecordsSelect" class="col-lg-3 col-md-4 col-xs-12 col-form-label">Registros por Pagina: </label>
+                <div class="col-lg-3 col-md-4 col-xs-12">
+                    <select id="RecordsSelect" class="form-control">
+                    @foreach (var item in ViewBag.ListRecords)
+                        {
+                            if(ViewBag.RecordsPerPage != null && ViewBag.RecordsPerPage == item){
+                                <option value="@item" selected>@item</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }
+                   </select>
+                </div>
+           </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -46,6 +63,25 @@
                     <p>No hay registros</p>
                 }
             </div>
+            <div class="row">
+                <div style="float:right" class="me-2 mt-2">
+                    @if(Model.Count() > 0 && ViewBag.Page != null){
+                        @if(ViewBag.Page > 1)
+                        {
+                            <a id="btn-back" class="btn btn-secondary" asp-action="Index" asp-route-Page="@(ViewBag.Page - 1)"> Anterior </a>
+                        }
+                        <a id="btn-next" class="btn btn-secondary" asp-action="Index" asp-route-Page="@((ViewBag.Page > 0 ? ViewBag.Page : 1) + 1)"> Siguiente </a>
+                    }else if (ViewBag.Page != null && ViewBag.Page > 0) //Si no hay registros pero hay un numero de pagina, ponemos solo el boton de regresar
+                    {
+                        <a id="btn-back" class="btn btn-secondary" asp-action="Index" asp-route-Page="@(ViewBag.Page - 1)"> Anterior </a>
+                    }
+                </div>
+                <div class="me-2 mt-2 float-end">
+                    <p>
+                        Pagina: <b> @(ViewBag.Page > 0 ? ViewBag.Page : 1)</b>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -59,3 +95,35 @@
     </script>
 }
 
+<script>
+    const UpdateLinks = () =>{
+        let back = document.getElementById('btn-back');
+        if(back){
+            if(back.href.includes('RecordsPerPage')){
+                let position = back.href.indexOf('RecordsPerPage') - 1;
+                back.href = back.href.slice(0, position);
+            }
+            back.href += '&RecordsPerPage=' + document.getElementById('RecordsSelect').value;
+        }
+
+        let next = document.getElementById('btn-next');
+        if(next){
+            if(next.href.includes('RecordsPerPage')){
+                let position = next.href.indexOf('RecordsPerPage') - 1;
+                next.href = next.href.slice(0, position);
+            }
+            next.href += '&RecordsPerPage=' + document.getElementById('RecordsSelect').value;
+        }
+    }
+
+    var select = document.getElementById('RecordsSelect');
+    select.addEventListener('change', (ev) => {
+        let url = window.location.pathname;
+        url += '?Page=1&RecordsPerPage=' + document.getElementById('RecordsSelect').value
+        window.location.replace(url);
+    });
+
+    window.onload = function () {
+        UpdateLinks();
+    };
+</script>

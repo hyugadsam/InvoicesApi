@@ -29,8 +29,8 @@
                        @for (var i = 0; i < Model.AuthorList.Count; i++)
                         {
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" checked="@Model.AuthorList[i].Check" name="AuthorsId" id="@Model.AuthorList[i].AuthorId" value="@Model.AuthorList[i].AuthorId">
-                                <label class="form-check-label" for="@Model.AuthorList[i].AuthorId" > @Model.AuthorList[i].Name </label>
+                                <input type="checkbox" class="form-check-input" checked="@Model.AuthorList[i].Check" name="AuthorsId" id="@Model.AuthorList[i].Author.AuthorId" value="@Model.AuthorList[i].Author.AuthorId">
+                                <label class="form-check-label" for="@Model.AuthorList[i].Author.AuthorId" > @Model.AuthorList[i].Author.Name </label>
                             </div>
                         }
                     </div>

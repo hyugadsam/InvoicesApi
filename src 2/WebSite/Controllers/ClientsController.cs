@@ -1,36 +1,44 @@
-﻿using AutoMapper;
-using Dtos.Common;
-using Dtos.Request;
+﻿using Dtos.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using WebSite.Models.Authors;
-using WebSite.Models.Books;
+using WebSite.Interfaces;
 using WebSite.Models.Clients;
-using WebSite.Services;
 
 namespace WebSite.Controllers
 {
     public class ClientsController : Controller
     {
         private readonly ILogger<ClientsController> logger;
-        private readonly IWebApiService apiService;
-        private readonly IMapper mapper;
+        private readonly IClientsAppService service;
+        private readonly IBaseAppService baseService;
 
-        public ClientsController(ILogger<ClientsController> logger, IWebApiService apiService, IMapper mapper)
+        public ClientsController(ILogger<ClientsController> logger, IClientsAppService service, IBaseAppService baseService)
         {
             this.logger = logger;
-            this.apiService = apiService;
-            this.mapper = mapper;
+            this.service = service;
+            this.baseService = baseService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string message)
+        public async Task<IActionResult> Index(Models.Common.PaginationDto model, string message)
         {
-            var result = await apiService.GetClientList();
+            if (model == null)  //Si se entra directo a index es null y manda a la pagina 1
+                model = baseService.GetDefaultPagination();
+            else
+            {
+                if (!(model.RecordsPerPage != null && model.RecordsPerPage > 0))
+                {
+                    model.RecordsPerPage = baseService.GetRecordsPerPage();   //Si no viene la pagina, solo usamos el int por defecto
+                }
+            }
+
+            var result = await service.GetList(model);
             ViewBag.Message = message;
+            ViewBag.Page = model.Page;
+            ViewBag.RecordsPerPage = model.RecordsPerPage;
+            ViewBag.ListRecords = baseService.GetRecordsList();
+
             return View(result);
         }
 
@@ -41,12 +49,12 @@ namespace WebSite.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(NewAuthorModel model)
+        public async Task<IActionResult> Create(NewClientModel model)
         {
             if (!ModelState.IsValid)
                 return View();
 
-            var result = await apiService.CreateClient(model.Name);
+            var result = await service.Create(model);
             if (result?.Code == 200)
             {
                 return RedirectToAction(nameof(Index));
@@ -62,33 +70,11 @@ namespace WebSite.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int ClientId)
         {
-
-            var client = await apiService.GetClient(ClientId);
-            if (client == null || client?.ClientId != ClientId)
+            var model = await service.GetUpdateModel(ClientId);
+            if (model == null || model?.ClientId != ClientId)
                 return NotFound();
 
-            var books = await apiService.GetBookList();
-            var model = new UpdateClientModel()
-            {
-                ClientId = client.ClientId,
-                BookList = MarkSelectedBooks(books, client.BorrowedBooks),
-                Name = client.Name,
-            };
-
             return View(model);
-        }
-
-        private List<SelectBookModel> MarkSelectedBooks(List<BookDto> books, List<BookDto> ClientBooks)
-        {
-            var list = new List<SelectBookModel>();
-            if (books == null || books?.Count() == 0)
-                return list;
-            list = books.Select(b => new SelectBookModel
-            {
-                Book = b, Checked = ClientBooks != null ? ClientBooks.Any(bk => bk.BookId == b.BookId) : false //Marcar los asignados
-            }).ToList();
-
-            return list;
         }
 
         [HttpPost]
@@ -97,14 +83,8 @@ namespace WebSite.Controllers
             if (!ModelState.IsValid)
                 return View();
 
-            var request = new UpdateClientRequest
-            {
-                BorrowedBooks = model.BooksId,
-                ClientId = model.ClientId,
-                Name = model.Name,
-            };
+            var result = await service.Update(model);
 
-            var result = await apiService.UpdateClient(request);
             if (result?.Code == 200)
             {
                 return RedirectToAction(nameof(Index));
@@ -118,7 +98,7 @@ namespace WebSite.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int ClientId)
         {
-            var client = await apiService.GetClient(ClientId);
+            var client = await service.Get(ClientId);
             if (client == null || client?.ClientId != ClientId)
                 return NotFound();
 
@@ -128,16 +108,13 @@ namespace WebSite.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int ClientId)
         {
-            var result = await apiService.DeleteClient(ClientId);
+            var result = await service.Delete(ClientId);
             if (result?.Code == 200)
             {
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Index), new { result.Message });
         }
-
-
-
 
 
     }

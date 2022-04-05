@@ -14,7 +14,8 @@ namespace WebSite.Utility
         {
             #region Authors
             CreateMap<FullAuthorDto, AuthorDto>();
-            CreateMap<AuthorDto, SelectAuthorModel>();
+            CreateMap<AuthorDto, SelectAuthorModel>()
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(a => a));
             //CreateMap<AuthorDto, Author>();
             //CreateMap<Author, FullAuthorDto>()
             //    .ForMember(dest => dest.BooksList, opt => opt.MapFrom(MapAuthorToFullDto));
@@ -46,16 +47,16 @@ namespace WebSite.Utility
 
         #region Methods
 
-        private List<int> MapAuthorListFromChecks(UpdateBookModel model, UpdateBookRequest request)
-        {
-            var list = new List<int>();
-            if (model == null || model.AuthorList == null || model.AuthorList?.Count == 0)
-                return list;
+        //private List<int> MapAuthorListFromChecks(UpdateBookModel model, UpdateBookRequest request)
+        //{
+        //    var list = new List<int>();
+        //    if (model == null || model.AuthorList == null || model.AuthorList?.Count == 0)
+        //        return list;
 
-            list = model.AuthorList.Where(a => a.Check).Select(at => at.AuthorId).ToList();
+        //    list = model.AuthorList.Where(a => a.Check).Select(at => at.AuthorId).ToList();
 
-            return list;
-        }
+        //    return list;
+        //}
 
         //private List<BookDto> MapAuthorToFullDto(Client client, FullClientDto dto)
         //{

@@ -28,9 +28,9 @@ namespace InvoicesWebApp.Controllers
 
         [HttpGet]
         [Route("Get")]
-        public async Task<List<BookDto>> GetBookList()
+        public async Task<List<BookDto>> GetBookList([FromQuery] PaginationDto pagination)
         {
-            return await service.GetBookList();
+            return await service.GetBookList(pagination);
         }
 
         [HttpGet]

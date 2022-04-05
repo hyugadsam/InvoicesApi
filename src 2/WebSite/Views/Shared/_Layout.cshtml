@@ -16,14 +16,10 @@
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebSite</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                    <span class="bi bi-list"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Authors" asp-action="Index">Autores</a>
                         </li>
@@ -48,12 +44,41 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - WebSite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="d-flex justify-content-between" >
+                <p>© 2022 S Macias, Inc. All rights reserved.</p>
+                <ul class="list-unstyled d-flex">
+                    <li class="ms-3" >
+                        <a class="link-info">
+                            <i style="font-size:36px;" class="bi bi-twitter"></i>
+                            </a>
+                    </li>
+                    <li class="ms-3">
+                        <a class="link-primary">
+                            <i style="font-size:36px;" class="bi bi-facebook"></i>
+                            </a>
+                    </li>
+                    <li class="ms-3">
+                        <a class="link-danger">
+                            <i style="font-size:36px;" class="bi bi-instagram"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if(window.location.pathname.includes(link.pathname))
+                {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -28,9 +28,9 @@ namespace InvoicesWebApp.Controllers
 
         [HttpGet]
         [Route("Get")]
-        public async Task<List<AuthorDto>> GetAuthorList()
+        public async Task<List<AuthorDto>> GetAuthorList([FromQuery] PaginationDto pagination)
         {
-            return await service.GetAuthorList();
+            return await service.GetAuthorList(pagination);
         }
 
         [HttpGet]

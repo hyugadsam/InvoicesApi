@@ -14,8 +14,8 @@ namespace DBService.Entities
         [Required]
         public DateTime EnrollDate { get; set; }
 
-        public List<Book> BorrowedBooks { get; set; }
+        //public List<Book> BorrowedBooks { get; set; }
 
-        //public List<ClientBook> ClientBooks { get; set; }
+        public List<ClientBook> ClientBooks { get; set; }
     }
 }

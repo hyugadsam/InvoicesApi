@@ -1,19 +1,11 @@
 ﻿using DBService.Entities;
+using DBService.Interfaces.CommonInterfaces;
 using Dtos.Request;
-using Dtos.Responses;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DBService.Interfaces
 {
-    public interface IClientService: IValidateUniqueText
+    public interface IClientService : IValidateUniqueText, IBasicOperations<Client>, IModifyOperations<UpdateClientRequest>
     {
-        Task<BasicCreateResponse> CreateClient(Client client);
-        Task<List<Client>> GetClientList();
-        Task<Client> GetClient(int Clientid);
-        Task<BasicResponse> UpdateClient(UpdateClientRequest request);
-        Task<BasicResponse> DeleteClient(int Clientid);
-
     }
 
 }

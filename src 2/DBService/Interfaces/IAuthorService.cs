@@ -1,18 +1,11 @@
 ﻿using DBService.Entities;
-using Dtos.Responses;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using DBService.Interfaces.CommonInterfaces;
+
 
 namespace DBService.Interfaces
 {
-    public interface IAuthorService: IValidateUniqueText
+    public interface IAuthorService: IValidateUniqueText, IBasicOperations<Author>, IModifyOperations<Author>
     {
-        Task<BasicCreateResponse> CreateAuthor(Author author);
-        Task<List<Author>> GetAuthorList();
-        Task<Author> GetAuthor(int Authorid);
-        Task<BasicResponse> UpdateAuthor(Author author);
-        Task<BasicResponse> DeleteAuthor(int AuthorId);
-
     }
 
 }

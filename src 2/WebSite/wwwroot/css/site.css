@@ -12,23 +12,45 @@ a {
   color: #0366d6;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
-
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
 
+.nav-link {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    margin: 2px 5px 2px 5px !important;
+}
+
+.nav-link:hover {
+    background-color: #d2f4ea;
+    border-radius:5px;
+}
+
+.nav-link.active {
+    background-color: #d2f4ea;
+    border-radius: 5px;
+}
+
+.navbar-toggler {
+    font-size: 1.7em;
+    font-weight: bolder;
+    color:black;
+}
+    .navbar-toggler:focus{
+        box-shadow:none;
+    }
+    .navbar-toggler:hover {
+        background: #1bc190;
+        color: white;
+    }
 /* Sticky footer styles
 -------------------------------------------------- */
-html {
-  font-size: 14px;
-}
+    html {
+        font-size: 14px;
+    }
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -63,9 +85,16 @@ body {
   margin-bottom: 60px;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    background-color: #f7f7f7;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+/*General Forms*/
+.card-header {
+    border-radius: 5px !important;
+    border: 1px solid rgba(0,0,0,.125);
 }
